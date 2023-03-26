@@ -3,7 +3,9 @@
 const sample_url ="https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json"
 
 // Get the json data and put it in console.log
-d3.json(sample_url).then(function(data) {console.log(data)});
+d3.json(sample_url).then(function(data) {
+    console.log(data);
+});
 
 
 
@@ -15,7 +17,7 @@ d3.json(sample_url).then(function(data) {console.log(data)});
 function plotBarchart(sample_bar) {
     d3.json(sample_url).then((data) => {
         let allsamples = data.samples;
-        let value_sample = allsamples.filter(result => result.id == sample_bar);
+        let value_sample = allsamples.filter(x => x.id == sample_bar);
         let vdata = value_sample[0];
         let otu_ids = vdata.otu_ids;
         let otu_labels = vdata.otu_labels;
@@ -35,7 +37,7 @@ function plotBarchart(sample_bar) {
             orientation: "h"
         };
         // Set layout
-        let layout_bar = {title: "Bar Chart for Top 10 OTUs"};
+        let layout_bar = {title: "Bar Chart for Top OTUs"};
         // Create the plot
         Plotly.newPlot("bar", [trace_bar], layout_bar)
     });
@@ -51,7 +53,7 @@ function plotBarchart(sample_bar) {
 function plotBubblechart(sample_bubble) {
     d3.json(sample_url).then((data) => {
         let allsamples = data.samples;
-        let value_sample = allsamples.filter(result => result.id == sample_bubble);
+        let value_sample = allsamples.filter(x => x.id == sample_bubble);
         let vdata = value_sample[0];
         let otu_ids = vdata.otu_ids;
         let otu_labels = vdata.otu_labels;
@@ -84,36 +86,38 @@ function plotBubblechart(sample_bubble) {
 // Display the sample metadata, i.e., an individual's demographic information.
 // Display each key-value pair from the metadata JSON object somewhere on the page.
 // Create a function for metadata.
-function plotMetadata(sample_meta) {
+function Metadata(sample_meta) {
     d3.json(sample_url).then((data) => {
         let allmeta = data.metadata;
-        let value_meta = allmeta.filter(result => result.id == sample_meta);
+        let value_meta = allmeta.filter(x => x.id == sample_meta);
         // Log the data
         //console.log(value_meta);
         let vdata = value_meta[0];
         d3.select("#sample-metadata").html("");
         Object.entries(vdata).forEach(([k, v]) => {
             // Log key-value pair
-            console.log(k,v);
+            //console.log(k,v);
             d3.select("#sample-metadata").append("h6").text(`${k}: ${v}`);
         });
     });
 };
 
-//Setup dashboard
-function setup() {
+//Setup webpage
+function init() {
     let dropdown = d3.select("#selDataset");
     d3.json(sample_url).then((data) => {
-        let sample_names = data.names;
-        sample_names.forEach((id) => {
+        let name_id = data.names;
+        name_id.forEach((id) => {
             //console.log(id);
             dropdown.append("option").text(id).property("value", id);
         });
-        let sample1 = sample_names[0];
+        let sample1 = name_id[0];
+        // Log the data
+        //console.log(sample1);
         // Specify the plots
         plotBarchart(sample1);
         plotBubblechart(sample1); 
-        plotMetadata(sample1);
+        Metadata(sample1);
     });
 };
 
@@ -124,10 +128,20 @@ function testsubjectid(id_number) {
     // Recall all the functions
     plotBarchart(id_number);
     plotBubblechart(id_number);
-    plotMetadata(id_number);
+    Metadata(id_number);
+};
+
+// Add event listener for changes to the dropdown menu
+d3.selectAll("#selDataset").on("change", updatePage);
+
+// Define the updatePage function
+function updatePage() {
+  let dropdownMenu = d3.select("#selDataset");
+  let testSubjectID = dropdownMenu.property("value");
+  testsubjectid(testSubjectID);
 };
 
 // initialize setup
-setup();
+init();
 
 
