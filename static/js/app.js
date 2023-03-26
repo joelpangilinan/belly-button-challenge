@@ -11,15 +11,14 @@ function setup() {
     d3.json(sample_url).then((data) => {
         let sample_names = data.names;
         sample_names.forEach((id) => {
-            console.log(id);
+            //console.log(id);
             dropdown.append("option").text(id).property("value", id);
         });
         let sample1 = sample_names[0];
-        console.log(sample1);
         // Specify the plots
         //plotMetadata(sample1);
         plotBarchart(sample1);
-        //plotBubblechart(sample1); 
+        plotBubblechart(sample1); 
         //plotGaugechart(sample1);
     });
 };
@@ -38,13 +37,13 @@ function plotBarchart(sample_bar) {
         let otu_labels = vdata.otu_labels;
         let sample_values = vdata.sample_values;
         // Log the data
-        console.log(otu_ids, otu_labels, sample_values);
+        //console.log(otu_ids, otu_labels, sample_values);
         // Set the top 10 OTUs found in that individual.
         let xticks = sample_values.slice(0, 10).reverse();
         let yticks = otu_ids.slice(0, 10).map(id => `OTU ${id}`).reverse();
         let labels = otu_labels.slice(0, 10).reverse();
         // Bar chart
-        let trace = {
+        let trace_bar = {
             x: xticks,
             y: yticks,
             text: labels,
@@ -52,11 +51,58 @@ function plotBarchart(sample_bar) {
             orientation: "h"
         };
         // Set layout
-        let layout = {title: "Bar Chart for Top 10 OTUs"};
+        let layout_bar = {title: "Bar Chart for Top 10 OTUs"};
         // Create the plot
-        Plotly.newPlot("bar", [trace], layout)
+        Plotly.newPlot("bar", [trace_bar], layout_bar)
     });
 };
 
-// initialize
+// Create a bubble chart that displays each sample.
+// Use otu_ids for the x values.
+// Use sample_values for the y values.
+// Use sample_values for the marker size.
+// Use otu_ids for the marker colors.
+// Use otu_labels for the text values.
+// Create a function for the bubble chart.
+function plotBubblechart(sample_bubble) {
+    d3.json(sample_url).then((data) => {
+        let allsamples = data.samples;
+        let value_sample = allsamples.filter(result => result.id == sample_bubble);
+        let vdata = value_sample[0];
+        let otu_ids = vdata.otu_ids;
+        let otu_labels = vdata.otu_labels;
+        let sample_values = vdata.sample_values;
+        // Bubble chart
+        let trace_bubble = {
+            x: otu_ids,
+            y: sample_values,
+            text: otu_labels,
+            mode: "markers",
+            marker: {
+                size: sample_values,
+                color: otu_ids,
+                colorscale: "Earth"
+            }
+        };
+        // Set layout
+        let layout_bubble = {
+            title: "All Bacteria Samples",
+            hovermode: "closest",
+            xaxis: {title: "OTU id"},
+        };
+        // Create the plot
+        Plotly.newPlot("bubble", [trace_bubble], layout_bubble)
+    });
+};
+
+
+
+
+
+
+
+
+
+
+// initialize setup
 setup();
