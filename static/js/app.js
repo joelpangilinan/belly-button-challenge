@@ -13,13 +13,13 @@ function setup() {
         sample_names.forEach((id) => {
             console.log(id);
             dropdown.append("option").text(id).property("value", id);
-        })
+        });
         let sample1 = sample_names[0];
         console.log(sample1);
         // Specify the plots
         //plotMetadata(sample1);
         plotBarchart(sample1);
-        //plotBubblechart(sample1);
+        //plotBubblechart(sample1); 
         //plotGaugechart(sample1);
     });
 };
@@ -54,7 +54,7 @@ function plotBarchart(sample_bar) {
         // Set layout
         let layout = {title: "Bar Chart for Top 10 OTUs"};
         // Create the plot
-        Plotly.newPlot("bar", trace, layout)
+        Plotly.newPlot("bar", [trace], layout)
     });
 };
 
