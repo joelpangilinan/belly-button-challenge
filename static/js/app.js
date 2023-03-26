@@ -5,23 +5,7 @@ const sample_url ="https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-clas
 // Get the json data and put it in console.log
 d3.json(sample_url).then(function(data) {console.log(data)});
 
-//Setup dashboard
-function setup() {
-    let dropdown = d3.select("#selDataset");
-    d3.json(sample_url).then((data) => {
-        let sample_names = data.names;
-        sample_names.forEach((id) => {
-            //console.log(id);
-            dropdown.append("option").text(id).property("value", id);
-        });
-        let sample1 = sample_names[0];
-        // Specify the plots
-        //plotMetadata(sample1);
-        plotBarchart(sample1);
-        plotBubblechart(sample1); 
-        //plotGaugechart(sample1);
-    });
-};
+
 
 // Create a horizontal bar chart with a dropdown menu to display the top 10 OTUs found in that individual.
 // Use sample_values as the values for the bar chart.
@@ -72,6 +56,8 @@ function plotBubblechart(sample_bubble) {
         let otu_ids = vdata.otu_ids;
         let otu_labels = vdata.otu_labels;
         let sample_values = vdata.sample_values;
+        // Log the data
+        //console.log(otu_ids,otu_labels,sample_values);
         // Bubble chart
         let trace_bubble = {
             x: otu_ids,
@@ -95,14 +81,53 @@ function plotBubblechart(sample_bubble) {
     });
 };
 
+// Display the sample metadata, i.e., an individual's demographic information.
+// Display each key-value pair from the metadata JSON object somewhere on the page.
+// Create a function for metadata.
+function plotMetadata(sample_meta) {
+    d3.json(sample_url).then((data) => {
+        let allmeta = data.metadata;
+        let value_meta = allmeta.filter(result => result.id == sample_meta);
+        // Log the data
+        //console.log(value_meta);
+        let vdata = value_meta[0];
+        d3.select("#sample-metadata").html("");
+        Object.entries(vdata).forEach(([k, v]) => {
+            // Log key-value pair
+            console.log(k,v);
+            d3.select("#sample-metadata").append("h6").text(`${k}: ${v}`);
+        });
+    });
+};
 
+//Setup dashboard
+function setup() {
+    let dropdown = d3.select("#selDataset");
+    d3.json(sample_url).then((data) => {
+        let sample_names = data.names;
+        sample_names.forEach((id) => {
+            //console.log(id);
+            dropdown.append("option").text(id).property("value", id);
+        });
+        let sample1 = sample_names[0];
+        // Specify the plots
+        plotBarchart(sample1);
+        plotBubblechart(sample1); 
+        plotMetadata(sample1);
+    });
+};
 
-
-
-
-
-
-
+// Update webpage if test subject id number is changed
+function testsubjectid(id_number) {
+    // Log the data
+    //console.log(id_number);
+    // Recall all the functions
+    plotBarchart(id_number);
+    plotBubblechart(id_number);
+    plotMetadata(id_number);
+};
 
 // initialize setup
 setup();
+
+
